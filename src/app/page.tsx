@@ -186,28 +186,28 @@ export default function GradeCalculatorPage() {
                         <div className="space-y-4">
                             <div>
                                 <label htmlFor="studentCount" className="block text-sm font-medium text-gray-700 mb-1">Dersteki Öğrenci Sayısı</label>
-                                <input type="number" id="studentCount" value={inputs.studentCount} onChange={handleInputChange} className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" placeholder="Örn: 45" />
+                                <input type="number" id="studentCount" value={inputs.studentCount} onChange={handleInputChange} className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-900" placeholder="Örn: 45" />
                             </div>
                             <div>
                                 <label htmlFor="classMean" className="block text-sm font-medium text-gray-700 mb-1">Sınıf HBN Ortalaması</label>
-                                <input type="number" id="classMean" value={inputs.classMean} onChange={handleInputChange} className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" placeholder="Örn: 62.5" />
+                                <input type="number" id="classMean" value={inputs.classMean} onChange={handleInputChange} className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-900" placeholder="Örn: 62.5" />
                             </div>
                              <div>
                                 <label htmlFor="classStdDev" className="block text-sm font-medium text-gray-700 mb-1">Sınıf HBN Standart Sapması</label>
-                                <input type="number" id="classStdDev" value={inputs.classStdDev} onChange={handleInputChange} className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" placeholder="Örn: 8.2" />
+                                <input type="number" id="classStdDev" value={inputs.classStdDev} onChange={handleInputChange} className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-900" placeholder="Örn: 8.2" />
                             </div>
                             <hr className="my-2 border-t-2 border-dashed"/>
                             <div>
                                 <label htmlFor="yourHBN" className="block text-sm font-medium text-gray-700 mb-1">Kendi Ham Başarı Notunuz (HBN)</label>
-                                <input type="number" id="yourHBN" value={inputs.yourHBN} onChange={handleInputChange} className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" placeholder="Örn: 75" />
+                                <input type="number" id="yourHBN" value={inputs.yourHBN} onChange={handleInputChange} className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-900" placeholder="Örn: 75" />
                             </div>
                             <div>
                                 <label htmlFor="yourFinal" className="block text-sm font-medium text-gray-700 mb-1">Final/Bütünleme Sınav Notunuz</label>
-                                <input type="number" id="yourFinal" value={inputs.yourFinal} onChange={handleInputChange} className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" placeholder="Örn: 80" />
+                                <input type="number" id="yourFinal" value={inputs.yourFinal} onChange={handleInputChange} className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-900" placeholder="Örn: 80" />
                             </div>
                              <div>
                                 <label htmlFor="faculty" className="block text-sm font-medium text-gray-700 mb-1">Fakülte (Final Alt Sınırı İçin)</label>
-                                <select id="faculty" value={inputs.faculty} onChange={handleInputChange} className="w-full p-3 border border-gray-300 rounded-md bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                                <select id="faculty" value={inputs.faculty} onChange={handleInputChange} className="w-full p-3 border border-gray-300 rounded-md bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-900">
                                     <option value="45">Diğer Fakülteler (Final Alt Sınırı: 45)</option>
                                     <option value="50">Sağlık Bilimleri Fakültesi (Final Alt Sınırı: 50)</option>
                                     <option value="60">Eczacılık Fakültesi (Final Alt Sınırı: 60)</option>
