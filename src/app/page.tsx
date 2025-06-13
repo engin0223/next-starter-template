@@ -1,11 +1,11 @@
 /*
  * ----------------------------------------------------------------------
- * FILE: src/app/page.tsx (Statistics Input Version)
+ * FILE: src/app/page.tsx (Advanced Statistics Version)
  *
  * INSTRUCTIONS:
- * This version uses class statistics (mean, std. deviation) instead
- * of a list of all grades. Replace the content of your 'src/app/page.tsx'
- * file with the code below.
+ * This version uses separate statistics for midterm and final exams,
+ * along with a correlation coefficient 'p', to calculate the final
+ * HBN statistics. The midterm/final weight is fixed at 50%.
  * ----------------------------------------------------------------------
  */
 "use client";
@@ -17,10 +17,13 @@ type LetterGrade = 'AA' | 'BA' | 'BB' | 'CB' | 'CC' | 'DC' | 'DD' | 'FD' | 'FF';
 
 type Inputs = {
     studentCount: string;
-    classMean: string;
-    classStdDev: string;
-    yourHBN: string;
+    midtermMean: string;
+    midtermStdDev: string;
+    finalMean: string;
+    finalStdDev: string;
+    yourMidterm: string;
     yourFinal: string;
+    correlation: string; // 'p' value from -1 to 1
     faculty: string;
 };
 
@@ -28,13 +31,16 @@ type Result = {
     finalGrade: string;
     reason: string;
     stats: {
+        hbnMean: number;
+        hbnStdDev: number;
+        yourHBN: number;
         tScore?: number;
     } | null;
     error: string | null;
     warning: string | null;
 };
 
-// --- Helper Components for UI ---
+// --- Helper UI Components ---
 const ResultCard = ({ style, title, children }: { style: string, title: string, children: React.ReactNode }) => (
     <div className={`border-l-4 p-4 rounded-md ${style}`}>
         <h3 className="font-bold">{title}</h3>
@@ -54,15 +60,17 @@ const GradeColors: { [key: string]: string } = {
     'WARN': 'bg-yellow-50 border-yellow-400 text-yellow-800',
 };
 
-
 // --- Main Application Component ---
 export default function GradeCalculatorPage() {
     const [inputs, setInputs] = useState<Inputs>({
-        studentCount: '',
-        classMean: '',
-        classStdDev: '',
-        yourHBN: '',
-        yourFinal: '',
+        studentCount: '40',
+        midtermMean: '50',
+        midtermStdDev: '10',
+        finalMean: '50',
+        finalStdDev: '10',
+        yourMidterm: '60',
+        yourFinal: '60',
+        correlation: '0.5', // Default to a moderate positive correlation
         faculty: '45',
     });
     const [result, setResult] = useState<Result | null>(null);
@@ -71,7 +79,7 @@ export default function GradeCalculatorPage() {
         const { id, value } = e.target;
         setInputs(prev => ({ ...prev, [id]: value }));
     };
-    
+
     const calculateGrade = () => {
         // --- Calculation Logic Functions ---
         const getGradeFromMutlak = (hbn: number): LetterGrade => {
@@ -105,54 +113,70 @@ export default function GradeCalculatorPage() {
         };
 
         // --- Start Main Logic ---
-        const { studentCount: studentCountStr, classMean: classMeanStr, classStdDev: classStdDevStr, yourHBN: yourHBNStr, yourFinal: yourFinalStr, faculty } = inputs;
-        const n = parseInt(studentCountStr);
-        const classMean = parseFloat(classMeanStr);
-        const classStdDev = parseFloat(classStdDevStr);
-        const yourHBN = parseFloat(yourHBNStr);
-        const yourFinal = parseFloat(yourFinalStr);
-        const finalMin = parseInt(faculty);
+        const values = {
+            n: parseInt(inputs.studentCount),
+            midtermMean: parseFloat(inputs.midtermMean),
+            midtermStdDev: parseFloat(inputs.midtermStdDev),
+            finalMean: parseFloat(inputs.finalMean),
+            finalStdDev: parseFloat(inputs.finalStdDev),
+            yourMidterm: parseFloat(inputs.yourMidterm),
+            yourFinal: parseFloat(inputs.yourFinal),
+            correlation_p: parseFloat(inputs.correlation),
+            facultyMin: parseInt(inputs.faculty),
+        };
 
-        if (isNaN(n) || isNaN(classMean) || isNaN(classStdDev) || isNaN(yourHBN) || isNaN(yourFinal)) {
-            setResult({ finalGrade: '', reason: '', stats: null, error: 'Lütfen tüm sayısal alanları eksiksiz doldurun.', warning: null });
-            return;
-        }
+        // Remove midtermWeight from here, as it's now fixed
+        const { n, midtermMean, midtermStdDev, finalMean, finalStdDev, yourMidterm, yourFinal, correlation_p, facultyMin } = values;
 
-        let reasonParts: string[] = [];
-        let finalGrade: string;
-
-        if (yourFinal < finalMin) {
-            finalGrade = 'FF';
-            reasonParts.push(`Final notunuz (${yourFinal}), fakülteniz için belirlenen minimum sınır olan ${finalMin}'den düşük olduğu için notunuz doğrudan FF olarak belirlenmiştir.`);
-            setResult({ finalGrade, reason: reasonParts.join('<br>'), stats: null, error: null, warning: null });
+        if (Object.values(values).some(v => isNaN(v))) {
+             setResult({ finalGrade: '', reason: '', stats: null, error: 'Lütfen tüm sayısal alanları eksiksiz doldurun.', warning: null });
             return;
         }
         
+        // Hardcode weights to 50% each
+        const w1 = 0.5; 
+        const w2 = 0.5;
+
+        // Calculate HBN stats
+        const yourHBN = w1 * yourMidterm + w2 * yourFinal;
+        const hbnMean = w1 * midtermMean + w2 * finalMean;
+        const covariance = correlation_p * midtermStdDev * finalStdDev;
+        const hbnVariance = Math.pow(w1, 2) * Math.pow(midtermStdDev, 2) + Math.pow(w2, 2) * Math.pow(finalStdDev, 2) + 2 * w1 * w2 * covariance;
+        const hbnStdDev = hbnVariance > 0 ? Math.sqrt(hbnVariance) : 0;
+        
+        let reasonParts: string[] = [];
+        let finalGrade: string;
+
+        if (yourFinal < facultyMin) {
+            finalGrade = 'FF';
+            reasonParts.push(`Final notunuz (${yourFinal}), fakülteniz için belirlenen minimum sınır olan ${facultyMin}'den düşük olduğu için notunuz doğrudan FF olarak belirlenmiştir.`);
+            setResult({ finalGrade, reason: reasonParts.join('<br>'), stats: { yourHBN, hbnMean, hbnStdDev }, error: null, warning: null });
+            return;
+        }
+
         let isMutlak = false;
         if (n <= 10) {
             isMutlak = true;
             reasonParts.push(`Öğrenci sayısı (${n}) 10 veya daha az olduğu için <strong>Mutlak Değerlendirme Sistemi (Tablo-3)</strong> kullanılmıştır.`);
-        } else if (classMean >= 80) {
+        } else if (hbnMean >= 80) {
             isMutlak = true;
-            reasonParts.push(`Sınıfın ham başarı notu ortalaması (${classMean.toFixed(2)}) 80'den yüksek olduğu için <strong>Mutlak Değerlendirme Sistemi (Tablo-3)</strong> kullanılmıştır.`);
+            reasonParts.push(`Hesaplanan HBN ortalaması (${hbnMean.toFixed(2)}) 80'den yüksek olduğu için <strong>Mutlak Değerlendirme Sistemi (Tablo-3)</strong> kullanılmıştır.`);
         }
-
+        
         let rawCalculatedGrade: LetterGrade;
         let tScore: number | undefined;
 
         if (isMutlak) {
             rawCalculatedGrade = getGradeFromMutlak(yourHBN);
         } else {
-            // Relative System
-            if (n >= 30) {
-                tScore = classStdDev > 0 ? ((yourHBN - classMean) / classStdDev) * 10 + 50 : 50;
-                rawCalculatedGrade = getGradeFromTScore(tScore, classMean);
+             if (n >= 30) {
+                tScore = hbnStdDev > 0 ? ((yourHBN - hbnMean) / hbnStdDev) * 10 + 50 : 50;
+                rawCalculatedGrade = getGradeFromTScore(tScore, hbnMean);
                 reasonParts.push(`Öğrenci sayısı (${n}) 29'dan fazla olduğu için <strong>T-Skoru Sistemi (Tablo-1)</strong> kullanılmıştır.`);
-                if(tScore) reasonParts.push(`Hesaplanan T-Skorunuz: <strong>${tScore.toFixed(2)}</strong>`);
             } else { // Case for 11 <= n <= 29
                 setResult({
-                    finalGrade: '', reason: '', stats: null, error: null,
-                    warning: `Öğrenci sayısı 11 ile 29 arasında olduğunda, notunuzu hesaplamak için sınıftaki tüm notların listesi gereklidir. Bu yöntem, notların sıralanıp yüzdelik dilimlere ayrılmasına dayandığı için sadece ortalama ve standart sapma ile hesaplanamaz.`
+                    finalGrade: '', reason: '', stats: { yourHBN, hbnMean, hbnStdDev }, error: null,
+                    warning: `Öğrenci sayısı 11 ile 29 arasında olduğunda, notunuzu hesaplamak için sınıftaki tüm notların listesi gereklidir. Bu yöntem, notların sıralanıp yüzdelik dilimlere ayrılmasına dayandığı için sadece istatistiklerle hesaplanamaz.`
                 });
                 return;
             }
@@ -168,59 +192,73 @@ export default function GradeCalculatorPage() {
             finalGrade = rawCalculatedGrade;
         }
 
-        setResult({ finalGrade, reason: reasonParts.join('<br>'), stats: { tScore }, error: null, warning: null });
+        setResult({ finalGrade, reason: reasonParts.join('<br>'), stats: { yourHBN, hbnMean, hbnStdDev, tScore }, error: null, warning: null });
     };
-
+    
     return (
         <div className="max-w-4xl w-full">
             <div className="bg-white rounded-xl shadow-lg p-8">
                 <div className="text-center mb-8">
-                    <h1 className="text-3xl font-bold text-gray-800">KTÜ Harf Notu Hesaplayıcı</h1>
-                    <p className="text-gray-600 mt-2">Sınıf istatistiklerini girerek harf notunuzu hesaplayın.</p>
+                    <h1 className="text-3xl font-bold text-gray-800">KTÜ Harf Notu Hesaplayıcı (İstatistiksel)</h1>
+                    <p className="text-gray-600 mt-2">Vize/Final istatistiklerini girerek harf notunuzu tahmin edin.</p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    {/* Input Column */}
-                    <div>
-                        <h2 className="text-xl font-semibold text-gray-700 mb-4">Not Bilgileri</h2>
-                        <div className="space-y-4">
-                            <div>
-                                <label htmlFor="studentCount" className="block text-sm font-medium text-gray-700 mb-1">Dersteki Öğrenci Sayısı</label>
-                                <input type="number" id="studentCount" value={inputs.studentCount} onChange={handleInputChange} className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-900" placeholder="Örn: 45" />
-                            </div>
-                            <div>
-                                <label htmlFor="classMean" className="block text-sm font-medium text-gray-700 mb-1">Sınıf HBN Ortalaması</label>
-                                <input type="number" id="classMean" value={inputs.classMean} onChange={handleInputChange} className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-900" placeholder="Örn: 62.5" />
-                            </div>
-                             <div>
-                                <label htmlFor="classStdDev" className="block text-sm font-medium text-gray-700 mb-1">Sınıf HBN Standart Sapması</label>
-                                <input type="number" id="classStdDev" value={inputs.classStdDev} onChange={handleInputChange} className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-900" placeholder="Örn: 8.2" />
-                            </div>
-                            <hr className="my-2 border-t-2 border-dashed"/>
-                            <div>
-                                <label htmlFor="yourHBN" className="block text-sm font-medium text-gray-700 mb-1">Kendi Ham Başarı Notunuz (HBN)</label>
-                                <input type="number" id="yourHBN" value={inputs.yourHBN} onChange={handleInputChange} className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-900" placeholder="Örn: 75" />
-                            </div>
-                            <div>
-                                <label htmlFor="yourFinal" className="block text-sm font-medium text-gray-700 mb-1">Final/Bütünleme Sınav Notunuz</label>
-                                <input type="number" id="yourFinal" value={inputs.yourFinal} onChange={handleInputChange} className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-900" placeholder="Örn: 80" />
-                            </div>
-                             <div>
-                                <label htmlFor="faculty" className="block text-sm font-medium text-gray-700 mb-1">Fakülte (Final Alt Sınırı İçin)</label>
-                                <select id="faculty" value={inputs.faculty} onChange={handleInputChange} className="w-full p-3 border border-gray-300 rounded-md bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-900">
-                                    <option value="45">Diğer Fakülteler (Final Alt Sınırı: 45)</option>
-                                    <option value="50">Sağlık Bilimleri Fakültesi (Final Alt Sınırı: 50)</option>
-                                    <option value="60">Eczacılık Fakültesi (Final Alt Sınırı: 60)</option>
-                                </select>
-                            </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                    {/* --- Left Column: Class Stats & Params --- */}
+                    <div className="space-y-4">
+                        <h2 className="text-xl font-semibold text-gray-700 mb-2 border-b pb-2">Ders Parametreleri</h2>
+                        <div>
+                            <label htmlFor="studentCount" className="block text-sm font-medium text-gray-700">Öğrenci Sayısı</label>
+                            <input type="number" id="studentCount" value={inputs.studentCount} onChange={handleInputChange} className="w-full p-2 border border-gray-300 rounded-md mt-1" />
+                        </div>
+                        
+                        <h2 className="text-xl font-semibold text-gray-700 mb-2 pt-4 border-b pb-2">Sınıf İstatistikleri</h2>
+                         <div>
+                            <label htmlFor="midtermMean" className="block text-sm font-medium text-gray-700">Vize Ortalaması</label>
+                            <input type="number" id="midtermMean" value={inputs.midtermMean} onChange={handleInputChange} className="w-full p-2 border border-gray-300 rounded-md mt-1" />
+                        </div>
+                        <div>
+                            <label htmlFor="midtermStdDev" className="block text-sm font-medium text-gray-700">Vize Standart Sapması</label>
+                            <input type="number" id="midtermStdDev" value={inputs.midtermStdDev} onChange={handleInputChange} className="w-full p-2 border border-gray-300 rounded-md mt-1" />
+                        </div>
+                        <div>
+                            <label htmlFor="finalMean" className="block text-sm font-medium text-gray-700">Final Ortalaması</label>
+                            <input type="number" id="finalMean" value={inputs.finalMean} onChange={handleInputChange} className="w-full p-2 border border-gray-300 rounded-md mt-1" />
+                        </div>
+                        <div>
+                            <label htmlFor="finalStdDev" className="block text-sm font-medium text-gray-700">Final Standart Sapması</label>
+                            <input type="number" id="finalStdDev" value={inputs.finalStdDev} onChange={handleInputChange} className="w-full p-2 border border-gray-300 rounded-md mt-1" />
+                        </div>
+                        <div>
+                             <label htmlFor="correlation" className="block text-sm font-medium text-gray-700">Korelasyon Katsayısı (p)</label>
+                             <div className="flex items-center space-x-4 mt-1">
+                                <input type="range" id="correlation" min="-1" max="1" step="0.05" value={inputs.correlation} onChange={handleInputChange} className="w-full" />
+                                <span className="font-mono text-sm text-gray-700 bg-gray-100 p-2 rounded-md">{parseFloat(inputs.correlation).toFixed(2)}</span>
+                             </div>
                         </div>
                     </div>
-
-                    {/* Result Column */}
-                    <div>
-                        <h2 className="text-xl font-semibold text-gray-700 mb-4">Sonuç</h2>
-                        <div className="space-y-4">
-                            {!result && <ResultCard style={GradeColors.STATS} title="Bekleniyor..."><p>Hesaplama yapmak için lütfen gerekli alanları doldurun.</p></ResultCard>}
+                     {/* --- Right Column: Your Scores & Results --- */}
+                    <div className="space-y-4">
+                       <h2 className="text-xl font-semibold text-gray-700 mb-2 border-b pb-2">Kişisel Notlarınız</h2>
+                        <div>
+                            <label htmlFor="yourMidterm" className="block text-sm font-medium text-gray-700">Vize Notunuz</label>
+                            <input type="number" id="yourMidterm" value={inputs.yourMidterm} onChange={handleInputChange} className="w-full p-2 border border-gray-300 rounded-md mt-1" />
+                        </div>
+                        <div>
+                            <label htmlFor="yourFinal" className="block text-sm font-medium text-gray-700">Final Notunuz</label>
+                            <input type="number" id="yourFinal" value={inputs.yourFinal} onChange={handleInputChange} className="w-full p-2 border border-gray-300 rounded-md mt-1" />
+                        </div>
+                        <div>
+                            <label htmlFor="faculty" className="block text-sm font-medium text-gray-700">Fakülte (Final Alt Sınırı)</label>
+                            <select id="faculty" value={inputs.faculty} onChange={handleInputChange} className="w-full p-2 border border-gray-300 rounded-md bg-white mt-1">
+                                <option value="45">Diğer (45)</option>
+                                <option value="50">Sağlık Bilimleri (50)</option>
+                                <option value="60">Eczacılık (60)</option>
+                            </select>
+                        </div>
+                        <h2 className="text-xl font-semibold text-gray-700 pt-4 border-b pb-2">Sonuç</h2>
+                         <div className="space-y-4 pt-2">
+                            {!result && <ResultCard style={GradeColors.STATS} title="Bekleniyor..."><p>Hesaplama yapmak için alanları doldurun ve butona tıklayın.</p></ResultCard>}
                             {result?.error && <ResultCard style={GradeColors.WARN} title="Hata"><p>{result.error}</p></ResultCard>}
                             {result?.warning && <ResultCard style={GradeColors.WARN} title="Bilgilendirme"><p>{result.warning}</p></ResultCard>}
                             {result?.finalGrade && (
@@ -228,6 +266,18 @@ export default function GradeCalculatorPage() {
                                     <ResultCard style={GradeColors[result.finalGrade] || GradeColors.STATS} title="Hesaplanan Harf Notunuz">
                                         <span className="text-3xl font-extrabold">{result.finalGrade}</span>
                                     </ResultCard>
+
+                                    {result.stats && (
+                                    <ResultCard style={GradeColors.STATS} title="Hesaplanan İstatistikler">
+                                        <ul className="space-y-1 text-sm list-disc list-inside">
+                                            <li>Senin HBN: <strong>{result.stats.yourHBN.toFixed(2)}</strong></li>
+                                            <li>Sınıf HBN Ortalaması: <strong>{result.stats.hbnMean.toFixed(2)}</strong></li>
+                                            <li>Sınıf HBN Std. Sapması: <strong>{result.stats.hbnStdDev.toFixed(2)}</strong></li>
+                                            {result.stats.tScore && <li>T-Skorun: <strong>{result.stats.tScore.toFixed(2)}</strong></li>}
+                                        </ul>
+                                    </ResultCard>
+                                    )}
+
                                     <ResultCard style={GradeColors.INFO} title="Değerlendirme Yöntemi">
                                         <div dangerouslySetInnerHTML={{ __html: result.reason }} />
                                     </ResultCard>
