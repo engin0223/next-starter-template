@@ -230,19 +230,19 @@ export default function GradeCalculatorPage() {
                         <div className="space-y-4">
                             <div>
                                 <label htmlFor="allGradesText" className="block text-sm font-medium text-gray-700 mb-1">Sınıftaki Tüm Ham Başarı Notları (HBN)</label>
-                                <textarea id="allGradesText" value={inputs.allGradesText} onChange={handleInputChange} rows={8} className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" placeholder="Her satıra bir not gelecek şekilde tüm notları girin.&#10;78&#10;56&#10;92&#10;..."></textarea>
+                                <textarea id="allGradesText" value={inputs.allGradesText} onChange={handleInputChange} rows={8} className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-900" placeholder="Her satıra bir not gelecek şekilde tüm notları girin.&#10;78&#10;56&#10;92&#10;..."></textarea>
                             </div>
                             <div>
                                 <label htmlFor="yourHBN" className="block text-sm font-medium text-gray-700 mb-1">Kendi Ham Başarı Notunuz (HBN)</label>
-                                <input type="number" id="yourHBN" value={inputs.yourHBN} onChange={handleInputChange} className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" placeholder="Örn: 85" />
+                                <input type="number" id="yourHBN" value={inputs.yourHBN} onChange={handleInputChange} className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-900" placeholder="Örn: 85" />
                             </div>
                             <div>
                                 <label htmlFor="yourFinal" className="block text-sm font-medium text-gray-700 mb-1">Final/Bütünleme Sınav Notunuz</label>
-                                <input type="number" id="yourFinal" value={inputs.yourFinal} onChange={handleInputChange} className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" placeholder="Örn: 90" />
+                                <input type="number" id="yourFinal" value={inputs.yourFinal} onChange={handleInputChange} className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-900" placeholder="Örn: 90" />
                             </div>
                              <div>
                                 <label htmlFor="faculty" className="block text-sm font-medium text-gray-700 mb-1">Fakülte (Final Alt Sınırı İçin)</label>
-                                <select id="faculty" value={inputs.faculty} onChange={handleInputChange} className="w-full p-3 border border-gray-300 rounded-md bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                                <select id="faculty" value={inputs.faculty} onChange={handleInputChange} className="w-full p-3 border border-gray-300 rounded-md bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-900">
                                     <option value="45">Diğer Fakülteler (Final Alt Sınırı: 45)</option>
                                     <option value="50">Sağlık Bilimleri Fakültesi (Final Alt Sınırı: 50)</option>
                                     <option value="60">Eczacılık Fakültesi (Final Alt Sınırı: 60)</option>
