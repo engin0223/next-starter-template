@@ -12,7 +12,9 @@
 
 import { useState } from 'react';
 
-// --- Type Definitions for State ---
+// --- Type Definitions for State and Logic ---
+type LetterGrade = 'AA' | 'BA' | 'BB' | 'CB' | 'CC' | 'DC' | 'DD' | 'FD' | 'FF';
+
 type Inputs = {
     allGradesText: string;
     yourHBN: string;
@@ -77,12 +79,12 @@ export default function GradeCalculatorPage() {
             const sqDiff = data.map(n => Math.pow(n - mean, 2));
             return Math.sqrt(getMean(sqDiff));
         };
-        const getGradeFromMutlak = (hbn: number) => {
+        const getGradeFromMutlak = (hbn: number): LetterGrade => {
             if (hbn >= 90) return 'AA'; if (hbn >= 80) return 'BA'; if (hbn >= 75) return 'BB';
             if (hbn >= 70) return 'CB'; if (hbn >= 60) return 'CC'; if (hbn >= 50) return 'DC';
             if (hbn >= 40) return 'DD'; if (hbn >= 30) return 'FD'; return 'FF';
         };
-        const getGradeFromTScore = (tScore: number, mean: number) => {
+        const getGradeFromTScore = (tScore: number, mean: number): LetterGrade => {
              if (mean < 42.5) {
                 if (tScore >= 71) return 'AA'; if (tScore >= 66) return 'BA'; if (tScore >= 61) return 'BB'; if (tScore >= 56) return 'CB';
                 if (tScore >= 51) return 'CC'; if (tScore >= 46) return 'DC'; if (tScore >= 41) return 'DD'; if (tScore >= 36) return 'FD'; return 'FF';
@@ -106,7 +108,7 @@ export default function GradeCalculatorPage() {
                 if (tScore >= 39) return 'CC'; if (tScore >= 34) return 'DC'; if (tScore >= 29) return 'DD'; if (tScore >= 24) return 'FD'; return 'FF';
             }
         };
-        const getGradeFromPercentage = (hbn: number, allGrades: number[], mean: number) => {
+        const getGradeFromPercentage = (hbn: number, allGrades: number[], mean: number): LetterGrade => {
              const percentages: {[key: string]: number} = {};
              if (mean < 42.5) {
                 percentages.AA = 3; percentages.BA = 6; percentages.BB = 9; percentages.CB = 14.4; percentages.CC = 21.6; percentages.DC = 19.2; percentages.DD = 12.8; percentages.FD = 7; percentages.FF = 7;
@@ -126,7 +128,8 @@ export default function GradeCalculatorPage() {
             const sortedGrades = [...allGrades].sort((a, b) => b - a);
             const studentRank = sortedGrades.indexOf(hbn) + 1;
             let cumulativePercentage = 0;
-            for (const grade of ['AA', 'BA', 'BB', 'CB', 'CC', 'DC', 'DD', 'FD', 'FF']) {
+            const gradeOrder: LetterGrade[] = ['AA', 'BA', 'BB', 'CB', 'CC', 'DC', 'DD', 'FD', 'FF'];
+            for (const grade of gradeOrder) {
                 cumulativePercentage += percentages[grade];
                 if ((studentRank / allGrades.length * 100) <= cumulativePercentage) return grade;
             }
@@ -174,7 +177,7 @@ export default function GradeCalculatorPage() {
             reasonParts.push(`Sınıfın ham başarı notu ortalaması (${classMean.toFixed(2)}) 80'den yüksek olduğu için <strong>Mutlak Değerlendirme Sistemi (Tablo-3)</strong> kullanılmıştır.`);
         }
 
-        let rawCalculatedGrade: string;
+        let rawCalculatedGrade: LetterGrade;
         let tScore: number | undefined;
 
         if (isMutlak) {
@@ -187,7 +190,7 @@ export default function GradeCalculatorPage() {
                 tScore = classStdDev > 0 ? ((yourHBN - classMean) / classStdDev) * 10 + 50 : 50;
                 rawCalculatedGrade = getGradeFromTScore(tScore, classMean);
                 reasonParts.push(`Değerlendirmeye katılan öğrenci sayısı (${n}) 29'dan fazla olduğu için <strong>T-Skoru Sistemi (Tablo-1)</strong> kullanılmıştır.`);
-                reasonParts.push(`Hesaplanan T-Skorunuz: <strong>${tScore.toFixed(2)}</strong>`);
+                if(tScore) reasonParts.push(`Hesaplanan T-Skorunuz: <strong>${tScore.toFixed(2)}</strong>`);
             } else {
                 rawCalculatedGrade = getGradeFromPercentage(yourHBN, eligibleStudents, classMean);
                 reasonParts.push(`Değerlendirmeye katılan öğrenci sayısı (${n}) 11-29 arasında olduğu için <strong>Yüzdelik Dilim Sistemi (Tablo-2)</strong> kullanılmıştır.`);
@@ -195,7 +198,8 @@ export default function GradeCalculatorPage() {
         }
         
         const mutlakEquivalentGrade = getGradeFromMutlak(yourHBN);
-        const gradeValues = { 'AA': 9, 'BA': 8, 'BB': 7, 'CB': 6, 'CC': 5, 'DC': 4, 'DD': 3, 'FD': 2, 'FF': 1 };
+        const gradeValues: Record<LetterGrade, number> = { 'AA': 9, 'BA': 8, 'BB': 7, 'CB': 6, 'CC': 5, 'DC': 4, 'DD': 3, 'FD': 2, 'FF': 1 };
+        
         if (gradeValues[rawCalculatedGrade] < gradeValues[mutlakEquivalentGrade]) {
             finalGrade = mutlakEquivalentGrade;
             reasonParts.push(`Hesaplanan notunuz (${rawCalculatedGrade}), mutlak sistemdeki karşılığı olan <strong>${mutlakEquivalentGrade}</strong>'den düşük olamaz. Bu nedenle notunuz <strong>${mutlakEquivalentGrade}</strong> olarak belirlenmiştir (Yönetmelik Madde 9, Ek 6).`);
