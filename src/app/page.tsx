@@ -209,25 +209,25 @@ export default function GradeCalculatorPage() {
                         <h2 className="text-xl font-semibold text-gray-700 mb-2 border-b pb-2">Ders Parametreleri</h2>
                         <div>
                             <label htmlFor="studentCount" className="block text-sm font-medium text-gray-700">Öğrenci Sayısı</label>
-                            <input type="number" id="studentCount" value={inputs.studentCount} onChange={handleInputChange} className="w-full p-2 border border-gray-300 rounded-md mt-1" />
+                            <input type="number" id="studentCount" value={inputs.studentCount} onChange={handleInputChange} className="w-full p-2 border border-gray-300 rounded-md mt-1 text-gray-700" />
                         </div>
                         
                         <h2 className="text-xl font-semibold text-gray-700 mb-2 pt-4 border-b pb-2">Sınıf İstatistikleri</h2>
                          <div>
                             <label htmlFor="midtermMean" className="block text-sm font-medium text-gray-700">Vize Ortalaması</label>
-                            <input type="number" id="midtermMean" value={inputs.midtermMean} onChange={handleInputChange} className="w-full p-2 border border-gray-300 rounded-md mt-1" />
+                            <input type="number" id="midtermMean" value={inputs.midtermMean} onChange={handleInputChange} className="w-full p-2 border border-gray-300 rounded-md mt-1 text-gray-700" />
                         </div>
                         <div>
                             <label htmlFor="midtermStdDev" className="block text-sm font-medium text-gray-700">Vize Standart Sapması</label>
-                            <input type="number" id="midtermStdDev" value={inputs.midtermStdDev} onChange={handleInputChange} className="w-full p-2 border border-gray-300 rounded-md mt-1" />
+                            <input type="number" id="midtermStdDev" value={inputs.midtermStdDev} onChange={handleInputChange} className="w-full p-2 border border-gray-300 rounded-md mt-1 text-gray-700" />
                         </div>
                         <div>
                             <label htmlFor="finalMean" className="block text-sm font-medium text-gray-700">Final Ortalaması</label>
-                            <input type="number" id="finalMean" value={inputs.finalMean} onChange={handleInputChange} className="w-full p-2 border border-gray-300 rounded-md mt-1" />
+                            <input type="number" id="finalMean" value={inputs.finalMean} onChange={handleInputChange} className="w-full p-2 border border-gray-300 rounded-md mt-1 text-gray-700" />
                         </div>
                         <div>
                             <label htmlFor="finalStdDev" className="block text-sm font-medium text-gray-700">Final Standart Sapması</label>
-                            <input type="number" id="finalStdDev" value={inputs.finalStdDev} onChange={handleInputChange} className="w-full p-2 border border-gray-300 rounded-md mt-1" />
+                            <input type="number" id="finalStdDev" value={inputs.finalStdDev} onChange={handleInputChange} className="w-full p-2 border border-gray-300 rounded-md mt-1 text-gray-700" />
                         </div>
                         <div>
                              <label htmlFor="correlation" className="block text-sm font-medium text-gray-700">Korelasyon Katsayısı (p)</label>
