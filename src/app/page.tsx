@@ -242,15 +242,15 @@ export default function GradeCalculatorPage() {
                        <h2 className="text-xl font-semibold text-gray-700 mb-2 border-b pb-2">Kişisel Notlarınız</h2>
                         <div>
                             <label htmlFor="yourMidterm" className="block text-sm font-medium text-gray-700">Vize Notunuz</label>
-                            <input type="number" id="yourMidterm" value={inputs.yourMidterm} onChange={handleInputChange} className="w-full p-2 border border-gray-300 rounded-md mt-1" />
+                            <input type="number" id="yourMidterm" value={inputs.yourMidterm} onChange={handleInputChange} className="w-full p-2 border border-gray-300 rounded-md mt-1 text-gray-700" />
                         </div>
                         <div>
                             <label htmlFor="yourFinal" className="block text-sm font-medium text-gray-700">Final Notunuz</label>
-                            <input type="number" id="yourFinal" value={inputs.yourFinal} onChange={handleInputChange} className="w-full p-2 border border-gray-300 rounded-md mt-1" />
+                            <input type="number" id="yourFinal" value={inputs.yourFinal} onChange={handleInputChange} className="w-full p-2 border border-gray-300 rounded-md mt-1 text-gray-700" />
                         </div>
                         <div>
                             <label htmlFor="faculty" className="block text-sm font-medium text-gray-700">Fakülte (Final Alt Sınırı)</label>
-                            <select id="faculty" value={inputs.faculty} onChange={handleInputChange} className="w-full p-2 border border-gray-300 rounded-md bg-white mt-1">
+                            <select id="faculty" value={inputs.faculty} onChange={handleInputChange} className="w-full p-2 border border-gray-300 rounded-md bg-white mt-1 text-gray-700">
                                 <option value="45">Diğer (45)</option>
                                 <option value="50">Sağlık Bilimleri (50)</option>
                                 <option value="60">Eczacılık (60)</option>
