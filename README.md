@@ -10,17 +10,17 @@ Karadeniz Teknik Üniversitesi (KTÜ) notlandırma yönetmeliklerini kodlar ve s
 Uygulama:
 
 * Vize ve final sınav özet istatistiklerini (ortalama, standart sapma) kabul eder
-* Vize ve final arasındaki korelasyon katsayısı $p$'yi kabul eder
+* Vize ve final arasındaki korelasyon katsayısı $p$’yi kabul eder
 * Ağırlıklı ders notunu (HBN) ve dağılımını hesaplar
-* KTÜ değerlendirme kurallarını (T-puanı yöntemi, mutlak yöntem, fakülteye özgü final eşikleri) uygular
+* KTÜ değerlendirme kurallarını uygular (T-puanı yöntemi, mutlak yöntem, fakülteye özgü final eşikleri)
 
-> **Not:** Finansal nedenlerden dolayı özel bir alan adı satın alınmamıştır; uygulama şu anda ücretsiz Cloudflare Workers URL'si altında barındırılmaktadır. Uygun olduğunda özel bir alan adı eklenecektir.
+> **Not:** Finansal nedenlerden dolayı özel bir alan adı satın alınmamıştır; uygulama şu anda ücretsiz Cloudflare Workers URL’si altında barındırılmaktadır. Uygun olduğunda özel bir alan adı eklenecektir.
 
 ---
 
 ## Matematiksel Türetme (HBN Ortalaması ve Varyansı)
 
-Bu bölüm, uygulamada kullanılan matematiksel formülleri adım adım gösterir ve HBN (Harfli Başarı Notu) hesaplamasının temelini açıklar.
+Bu bölüm, uygulamada kullanılan matematiksel formülleri adım adım açıklar ve HBN (Harfli Başarı Notu) hesaplamasının temelini gösterir.
 
 ### Notasyon
 
@@ -30,9 +30,11 @@ Bu bölüm, uygulamada kullanılan matematiksel formülleri adım adım gösteri
   Ortalama: $\mu_Y$, Standart sapma: $\sigma_Y$, Varyans: $\mathrm{Var}(Y) = \sigma_Y^2$
 * $p$ : $X$ ve $Y$ arasındaki Pearson korelasyon katsayısı, $p \in [-1,1]$
   Kovaryans: $\mathrm{Cov}(X,Y)$
-* Dersin ağırlıkları: $w_1$ (vize), $w_2$ (final). Varsayılan: $w_1 = w_2 = 0.5$
+* Ders ağırlıkları: $w_1$ (vize), $w_2$ (final). Varsayılan: $w_1 = w_2 = 0.5$
 
-### Ağırlıklı Ders Puanı (HBN)
+---
+
+### 1️⃣ Ağırlıklı Ders Puanı (HBN)
 
 Öğrencinin ağırlıklı notu:
 
@@ -40,7 +42,9 @@ $$
 H = w_1 X + w_2 Y
 $$
 
-#### 1️⃣ HBN Ortalaması
+---
+
+### 2️⃣ HBN Ortalaması
 
 Doğrusal beklenti özelliğini kullanarak:
 
@@ -52,7 +56,11 @@ $$
 \end{align}
 $$
 
-#### 2️⃣ HBN Varyansı
+> Yani HBN’nin beklenen değeri, vize ve finalin ağırlıklı ortalamasıdır.
+
+---
+
+### 3️⃣ HBN Varyansı
 
 İki rastgele değişkenin toplamı için varyans özdeşliği:
 
@@ -72,7 +80,7 @@ $$
 \mathrm{Cov}(X,Y) = p \, \sigma_X \sigma_Y
 $$
 
-Varyans formülü:
+Son formül:
 
 $$
 \mathrm{Var}(H) = w_1^2 \sigma_X^2 + w_2^2 \sigma_Y^2 + 2 w_1 w_2 p \, \sigma_X \sigma_Y
@@ -84,14 +92,17 @@ $$
 \sigma_H = \sqrt{\mathrm{Var}(H)}
 $$
 
+> Bu formül, hem öğrencinin hem de sınıfın HBN dağılımını doğru şekilde tahmin eder.
+
 ---
 
 ## Özellikler
 
-* 📐 **İstatistiksel Hesaplama:** Korelasyon kullanılarak tam HBN ortalaması ve varyans hesaplaması.
-* 🎓 **Harf Notu Tahmini:** Sınıf büyüklüğüne göre T-puan sistemi veya mutlak notlandırma yöntemi.
-* 🖥️ **Etkileşimli Kullanıcı Arayüzü:** React ve Tailwind CSS ile uyumlu arayüz. * ☁️ **Cloudflare Dağıtımı:** Küresel erişim için hafif statik barındırma.
-* 🔒 **Fakülte Kuralları:** Bölüm başına yapılandırılabilir minimum son eşikler.
+* 📐 **İstatistiksel Hesaplama:** Korelasyon kullanılarak tam HBN ortalaması ve varyans hesaplaması
+* 🎓 **Harf Notu Tahmini:** Sınıf büyüklüğüne göre T-puan sistemi veya mutlak notlandırma yöntemi
+* 🖥️ **Etkileşimli Kullanıcı Arayüzü:** React ve Tailwind CSS ile uyumlu
+* ☁️ **Cloudflare Dağıtımı:** Küresel erişim için hafif statik barındırma
+* 🔒 **Fakülte Kuralları:** Bölüm başına yapılandırılabilir minimum son eşikler
 
 ---
 
@@ -128,4 +139,4 @@ npm run build && npm run deploy
 
 * **Resmi akademik kuralları** sağlam bir algoritmaya dönüştürmeyi gösterir
 * **İstatistiksel akıl yürütme, TypeScript mimarisi, kullanıcı arayüzü tasarımı ve bulut dağıtımında** yetkinlik gösterir
-* Alan mantığı arasında net ayrım (istatistikler) ve sunum (Next.js kullanıcı arayüzü) — üretim kalitesinde kodlama uygulamaları
+* Alan mantığı (istatistikler) ve sunum (Next.js kullanıcı arayüzü) arasındaki net ayrım — üretim kalitesinde kodlama uygulamaları
