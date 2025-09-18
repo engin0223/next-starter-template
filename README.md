@@ -18,54 +18,71 @@ Uygulama:
 
 ---
 
-## Matematiksel türetme (HBN ortalaması ve varyansı)
+## Matematiksel Türetme (HBN Ortalaması ve Varyansı)
 
-Bu bölüm, uygulamada kullanılan matematiksel formülleri tam olarak belgelemekte ve bunların eşleştirilmiş değişkenler için temel varyans özdeşliklerinden nasıl türetildiklerini göstermektedir.
+Bu bölüm, uygulamada kullanılan matematiksel formülleri adım adım gösterir ve HBN (Harfli Başarı Notu) hesaplamasının temelini açıklar.
 
 ### Notasyon
 
-- X, vize notu rastgele değişkeni (sınıf dağılımı) olsun.
+* $X$ : Vize notu rastgele değişkeni (sınıf dağılımı)
+  Ortalama: $\mu_X$, Standart sapma: $\sigma_X$, Varyans: $\mathrm{Var}(X) = \sigma_X^2$
+* $Y$ : Final notu rastgele değişkeni (sınıf dağılımı)
+  Ortalama: $\mu_Y$, Standart sapma: $\sigma_Y$, Varyans: $\mathrm{Var}(Y) = \sigma_Y^2$
+* $p$ : $X$ ve $Y$ arasındaki Pearson korelasyon katsayısı, $p \in [-1,1]$
+  Kovaryans: $\mathrm{Cov}(X,Y)$
+* Dersin ağırlıkları: $w_1$ (vize), $w_2$ (final). Varsayılan: $w_1 = w_2 = 0.5$
 
-Ortalama: μ_X, standart sapma: σ_X, varyans: Var(X) = σ_X².
-- Y, final notu rastgele değişkeni (sınıf dağılımı) olsun.
-Ortalama: μ_Y, standart sapma: σ_Y, varyans: Var(Y) = σ_Y².
-- p, X ve Y arasındaki Pearson korelasyon katsayısı olsun: p = corr(X,Y), burada p ∈ [-1,1].
-- Cov(X,Y), X ve Y arasındaki kovaryansı göstersin.
-- Bu uygulamada ders notunun ağırlıkları sabittir: ara sınav için w₁ ve final için w₂. Varsayılan olarak w₁ = w₂ = 0,5'tir.
+### Ağırlıklı Ders Puanı (HBN)
 
-### Ağırlıklı ders puanı (HBN)
+Öğrencinin ağırlıklı notu:
 
-Öğrencinin (ve sınıfın) HBN'sini ağırlıklı toplam olarak tanımlayın:
+$$
+H = w_1 X + w_2 Y
+$$
 
-H = w₁ * X + w₂ * Y
+#### 1️⃣ HBN Ortalaması
 
-#### HBN'nin ortalaması
+Doğrusal beklenti özelliğini kullanarak:
 
-Beklentinin doğrusallığına göre:
+$$
+\begin{align}
+\mu_H &= \mathbb{E}[H] \\
+       &= \mathbb{E}[w_1 X + w_2 Y] \\
+       &= w_1 \mu_X + w_2 \mu_Y
+\end{align}
+$$
 
-μ_H = E[H] = w₁ * μ_X + w₂ * μ_Y
+#### 2️⃣ HBN Varyansı
 
-#### HBN'nin varyansı — türetme
+İki rastgele değişkenin toplamı için varyans özdeşliği:
 
-İki rastgele değişkenin toplamı için varyans özdeşliğiyle başlayın:
+$$
+\mathrm{Var}(X + Y) = \mathrm{Var}(X) + \mathrm{Var}(Y) + 2 \, \mathrm{Cov}(X,Y)
+$$
 
-Var(X + Y) = Var(X) + Var(Y) + 2 * Cov(X,Y)
+Ağırlıklı toplam için:
 
-H = w₁ * X + w₂ * Y ağırlıklı toplam için:
+$$
+\mathrm{Var}(H) = w_1^2 \, \mathrm{Var}(X) + w_2^2 \, \mathrm{Var}(Y) + 2 w_1 w_2 \, \mathrm{Cov}(X,Y)
+$$
 
-Var(H) = w₁² * Var(X) + w₂² * Var(Y) + 2 * w₁ * w₂ * Cov(X,Y)
+Kovaryansı korelasyon katsayısı ile ifade edersek:
 
-İfade korelasyon katsayısı p kullanılarak kovaryans:
+$$
+\mathrm{Cov}(X,Y) = p \, \sigma_X \sigma_Y
+$$
 
-Cov(X,Y) = p * σ_X * σ_Y
+Varyans formülü:
 
-Varyans ifadesine yerine koyun:
+$$
+\mathrm{Var}(H) = w_1^2 \sigma_X^2 + w_2^2 \sigma_Y^2 + 2 w_1 w_2 p \, \sigma_X \sigma_Y
+$$
 
-Var(H) = w₁² * σ_X² + w₂² * σ_Y² + 2 * w₁ * w₂ * p * σ_X * σ_Y
+HBN standart sapması:
 
-Son olarak, HBN standart sapması:
-
-σ_H = sqrt(Var(H))
+$$
+\sigma_H = \sqrt{\mathrm{Var}(H)}
+$$
 
 ---
 
