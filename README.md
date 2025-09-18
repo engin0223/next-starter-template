@@ -1,57 +1,56 @@
-# 📊 KTÜ Grade Calculator (Statistical Evaluation)
+# 📊 KTÜ Not Hesaplayıcı (İstatistiksel Değerlendirme)
 
-[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/your-username/ktu-grade-calculator)
+[![Cloudflare'e Dağıtım](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/kullanıcı-adınız/ktu-not-hesaplayıcısı)
 
-## Project Overview
+## Projeye Genel Bakış
 
-This project is a **statistical grade calculator** implemented in **Next.js + TypeScript** and deployed on **Cloudflare Workers**.  
-It encodes the Karadeniz Technical University (KTÜ) style grading rules and uses statistical methods to estimate student letter grades from class exam distributions.
+Bu proje, **Next.js + TypeScript** ile geliştirilmiş ve **Cloudflare Workers** üzerinde dağıtılmış bir **istatistiksel not hesaplayıcıdır**.
+Karadeniz Teknik Üniversitesi (KTÜ) tarzı notlandırma kurallarını kodlar ve sınıf sınav dağılımlarından öğrenci harf notlarını tahmin etmek için istatistiksel yöntemler kullanır.
 
-The application:
-- accepts midterm and final exam summary statistics (mean, standard deviation),
-- accepts the correlation coefficient `p` between midterm and final,
-- computes the weighted course score (HBN) and its distribution,
-- applies KTÜ’s evaluation rules (T-score method, absolute method, and faculty final thresholds).
+Uygulama:
+- ara sınav ve final sınavı özet istatistiklerini (ortalama, standart sapma) kabul eder,
+- ara sınav ve final sınavı arasındaki korelasyon katsayısı `p`'yi kabul eder,
+- ağırlıklı ders notunu (HBN) ve dağılımını hesaplar,
+- KTÜ değerlendirme kurallarını (T-puanı yöntemi, mutlak yöntem ve fakülte final eşikleri) uygular.
 
-> **Note:** A custom domain has not been purchased due to financial reasons; the app is currently hosted on the free Cloudflare Workers URL. A custom domain will be added when feasible.
+> **Not:** Finansal nedenlerden dolayı özel bir alan adı satın alınmamıştır; uygulama şu anda ücretsiz Cloudflare Workers URL'sinde barındırılmaktadır. Uygun olduğunda özel bir alan adı eklenecektir.
 
 ---
 
-## Mathematical derivation (HBN mean & variance)
+## Matematiksel türetme (HBN ortalaması ve varyansı)
 
-This section documents the exact mathematical formulas used in the implementation and shows how they are derived from basic variance identities for paired variables.
+Bu bölüm, uygulamada kullanılan matematiksel formülleri belgelemekte ve bunların eşleştirilmiş değişkenler için temel varyans özdeşliklerinden nasıl türetildiklerini göstermektedir.
 
-### Notation
+### Gösterim
 
-- Let \(X\) be the midterm score random variable (class distribution).  
-  Mean: \(\mu_X\), standard deviation: \(\sigma_X\), variance: \(\operatorname{Var}(X)=\sigma_X^2\).
-- Let \(Y\) be the final score random variable (class distribution).  
-  Mean: \(\mu_Y\), standard deviation: \(\sigma_Y\), variance: \(\operatorname{Var}(Y)=\sigma_Y^2\).
-- Let \(p\) be the Pearson correlation coefficient between \(X\) and \(Y\): \(p = \operatorname{corr}(X,Y)\), where \(p\in[-1,1]\).
-- Let \(\operatorname{Cov}(X,Y)\) denote the covariance between \(X\) and \(Y\).
-- Weights for the course grade are fixed in this implementation: \(w_1\) for midterm and \(w_2\) for final. By default \(w_1 = w_2 = 0.5\).
+- \(X\) ara sınav notu rastgele değişkeni (sınıf dağılımı) olsun.
+Ortalama: \(\mu_X\), standart sapma: \(\sigma_X\), varyans: \(\operatorname{Var}(X)=\sigma_X^2\).
+- \(Y\)'nin son puan rastgele değişkeni (sınıf dağılımı) olduğunu varsayalım.
+Ortalama: \(\mu_Y\), standart sapma: \(\sigma_Y\), varyans: \(\operatorname{Var}(Y)=\sigma_Y^2\).
+- \(p\)'nin \(X\) ve \(Y\) arasındaki Pearson korelasyon katsayısı olduğunu varsayalım: \(p = \operatorname{corr}(X,Y)\), burada \(p\in[-1,1]\).
+- \(\operatorname{Cov}(X,Y)\)'nin \(X\) ve \(Y\) arasındaki kovaryansı gösterdiğini varsayalım. - Bu uygulamada ders notunun ağırlıkları sabittir: ara sınav için \(w_1\) ve final için \(w_2\). Varsayılan olarak \(w_1 = w_2 = 0,5\).
 
-### Weighted course score (HBN)
+### Ağırlıklı ders notu (HBN)
 
-Define the student (and class) HBN as the weighted sum:
+Öğrencinin (ve sınıfın) HBN'sini ağırlıklı toplam olarak tanımlayın:
 \[
 H = w_1 X + w_2 Y .
 \]
 
-#### Mean of HBN
-By linearity of expectation:
+#### HBN Ortalaması
+Beklentinin doğrusallığına göre:
 \[
 \mu_H = \mathbb{E}[H] = w_1 \mu_X + w_2 \mu_Y.
 \]
 
-#### Variance of HBN — derivation
+#### HBN'nin Varyansı — türetme
 
-Start with the variance identity for a sum of two random variables:
+İki rastgele değişkenin toplamı için varyans özdeşliğiyle başlayalım:
 \[
 \operatorname{Var}(X+Y) = \operatorname{Var}(X) + \operatorname{Var}(Y) + 2\operatorname{Cov}(X,Y).
 \]
 
-For a weighted sum \(H = w_1 X + w_2 Y\), apply the same identity with constants:
+Ağırlıklı bir toplam için \(H = w_1 X + w_2 Y\), aynı özdeşliği sabitlerle uygulayalım:
 \[
 \begin{aligned}
 \operatorname{Var}(H)
@@ -60,59 +59,58 @@ For a weighted sum \(H = w_1 X + w_2 Y\), apply the same identity with constants
 \end{aligned}
 \]
 
-We express covariance using the correlation coefficient \(p\):
+Kovaryansı, korelasyon katsayısı \(p\) kullanarak ifade ediyoruz:
 \[
 \operatorname{Cov}(X,Y) = p\,\sigma_X\,\sigma_Y.
 \]
 
-Substitute into the variance expression to obtain the HBN variance:
+HBN varyansını elde etmek için varyans ifadesine yerine koyalım:
 \[
 \boxed{\;
 \operatorname{Var}(H) = w_1^2 \sigma_X^2 \;+\; w_2^2 \sigma_Y^2 \;+\; 2 w_1 w_2 p \,\sigma_X \sigma_Y\;
 }
 \]
 
-Finally, the HBN standard deviation is
+Son olarak, HBN standart sapması şu şekildedir:
 \[
 \sigma_H = \sqrt{\operatorname{Var}(H)}.
 \]
 
-These are the exact formulas used in the application to compute the class HBN mean and standard deviation before converting a student's HBN into a T-score or an absolute grade.
+Bunlar, bir öğrencinin HBN'sini T puanına veya mutlak nota dönüştürmeden önce sınıf HBN ortalamasını ve standart sapmasını hesaplamak için uygulamada kullanılan tam formüllerdir.
 
-### Covariance and correlation in practice
+### Pratikte Kovaryans ve Korelasyon
 
-- If \(p\) is not known (not provided), a typical fallback is to assume \(p=0\) (independence) or to estimate it from raw class data when available.
-- The sign of \(p\) affects \(\operatorname{Var}(H)\): positive correlation increases the variance of the weighted sum, negative correlation reduces it.
+- \(p\) bilinmiyorsa (belirtilmediyse), tipik bir çözüm \(p=0\) (bağımsızlık) olduğunu varsaymak veya mevcut olduğunda ham sınıf verilerinden tahmin etmektir.
+- \(p\) işareti \(\operatorname{Var}(H)\'yi etkiler: pozitif korelasyon, ağırlıklı toplamın varyansını artırırken, negatif korelasyon azaltır.
 
-### T-score computation (for graded scaling)
+### T-puanı hesaplaması (dereceli ölçekleme için)
 
-When the T-score system is applied (typically for \(n \ge 30\)), a student's HBN is converted to a T-score as follows:
+T-puanı sistemi uygulandığında (genellikle \(n \ge 30\)), bir öğrencinin HBN'si aşağıdaki gibi T-puanına dönüştürülür:
 \[
-T = 50 + 10 \cdot \frac{H_{\text{student}} - \mu_H}{\sigma_H},
+T = 50 + 10 \cdot \frac{H_{\text{öğrenci}} - \mu_H}{\sigma_H},
 \]
-where \(\mu_H\) and \(\sigma_H\) are the class HBN mean and standard deviation computed above. The computed \(T\) is then mapped to a letter grade using KTÜ’s T-score tables.
+Burada \(\mu_H\) ve \(\sigma_H\) yukarıda hesaplanan sınıf HBN ortalaması ve standart sapmadır. Hesaplanan \(T\) daha sonra KTÜ'nün T-puanı tabloları kullanılarak bir harf notuna eşlenir.
 
 ---
 
-## Features (summary)
+## Özellikler (özet)
 
-- Formalized statistical computation using the exact variance identity for correlated paired exams.
-- T-score conversion and mapping to KTÜ letter grades.
-- Faculty final-exam minimum enforcement (configurable thresholds).
-- Responsive UI (React + Tailwind) and TypeScript for safe, maintainable code.
-- Deployed as a static app on Cloudflare Workers (free tier).
+- İlişkili eşleştirilmiş sınavlar için kesin varyans özdeşliği kullanılarak resmileştirilmiş istatistiksel hesaplama.
+- T-puanının KTÜ harf notlarına dönüştürülmesi ve eşlenmesi.
+- Fakülte final sınavı asgari uygulaması (yapılandırılabilir eşikler). - Duyarlı kullanıcı arayüzü (React + Tailwind) ve güvenli, sürdürülebilir kod için TypeScript.
+- Cloudflare Workers'da (ücretsiz sürüm) statik bir uygulama olarak dağıtıldı.
 
-## Tech stack
+## Teknoloji yığını
 
-- Next.js (React + TypeScript)  
-- Tailwind CSS  
-- Cloudflare Workers (static deploy)  
-- npm / yarn / pnpm / bun compatible
+- Next.js (React + TypeScript)
+- Tailwind CSS
+- Cloudflare Workers (statik dağıtım)
+- npm / yarn / pnpm / bun uyumlu
 
-## Getting started
+## Başlarken
 
 ```bash
-git clone https://github.com/your-username/ktu-grade-calculator
+git clone https://github.com/kullanıcı-adınız/ktu-grade-calculator
 cd ktu-grade-calculator
 npm install
 npm run dev
