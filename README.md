@@ -71,7 +71,7 @@ npm run build && npm run deploy
 
 Bu proje şu becerilerimi gösteriyor:
 
-* **Akademik düzenlemeleri** **işlevsel algoritmalara** dönüştürme. * Gerçek dünya web uygulamasında **istatistiksel analiz** uygulayın.
+* **Akademik düzenlemeleri** **işlevsel algoritmalara** dönüştürme. Gerçek dünya web uygulamasında **istatistiksel analiz** uygulayın.
 * Modern çerçeveler kullanarak **ölçeklenebilir, profesyonel düzeyde uygulamalar** oluşturun ve dağıtın.
 
 Potansiyel işverenlere teknik, matematiksel ve yazılım mühendisliği becerilerinizi sergilemek için uygun, **portföy kalitesinde bir proje** olarak tasarlanmıştır.
