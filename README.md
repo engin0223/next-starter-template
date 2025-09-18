@@ -1,116 +1,96 @@
-# 📊 KTÜ Grade Calculator (Statistical Evaluation)
+# 📊 KTÜ Not Hesaplayıcı (İstatistiksel Değerlendirme)
 
-[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/your-username/ktu-grade-calculator)
+[![Cloudflare'e Dağıtım](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/kullanıcı-adınız/ktu-not-hesaplayıcısı)
 
-## Project Overview
+## Projeye Genel Bakış
 
-This project is a **statistical grade calculator** implemented in **Next.js + TypeScript** and deployed on **Cloudflare Workers**.
-It encodes Karadeniz Technical University (KTÜ) grading regulations and uses advanced statistical methods to estimate student letter grades from class exam distributions.
+Bu proje, **Next.js + TypeScript** ile geliştirilmiş ve **Cloudflare Workers** üzerinde dağıtılmış bir **istatistiksel not hesaplayıcıdır**.
+Karadeniz Teknik Üniversitesi (KTÜ) notlandırma yönetmeliklerini kodlar ve sınıf sınav dağılımlarından öğrenci harf notlarını tahmin etmek için gelişmiş istatistiksel yöntemler kullanır.
 
-The application:
+Uygulama:
 
-* Accepts midterm and final exam summary statistics (mean, standard deviation)
-* Accepts the correlation coefficient $p$ between midterm and final
-* Computes the weighted course score (HBN) and its distribution
-* Applies KTÜ’s evaluation rules (T-score method, absolute method, faculty-specific final thresholds)
+* Vize ve final sınav özet istatistiklerini (ortalama, standart sapma) kabul eder
+* Vize ve final arasındaki korelasyon katsayısı $p$'yi kabul eder
+* Ağırlıklı ders notunu (HBN) ve dağılımını hesaplar
+* KTÜ değerlendirme kurallarını (T-puanı yöntemi, mutlak yöntem, fakülteye özgü final eşikleri) uygular
 
-> **Note:** A custom domain has not been purchased due to financial reasons; the app is currently hosted under the free Cloudflare Workers URL. A custom domain will be added when feasible.
-
----
-
-## Mathematical derivation (HBN mean & variance)
-
-This section documents the exact mathematical formulas used in the implementation and shows how they are derived from basic variance identities for paired variables.
-
-### Notation
-
-* Let $X$ be the midterm score random variable (class distribution).
-  Mean: $\mu_X$, standard deviation: $\sigma_X$, variance: $\operatorname{Var}(X)=\sigma_X^2$.
-* Let $Y$ be the final score random variable (class distribution).
-  Mean: $\mu_Y$, standard deviation: $\sigma_Y$, variance: $\operatorname{Var}(Y)=\sigma_Y^2$.
-* Let $p$ be the Pearson correlation coefficient between $X$ and $Y$: $p = \operatorname{corr}(X,Y)$, where $p\in[-1,1]$.
-* Let $\operatorname{Cov}(X,Y)$ denote the covariance between $X$ and $Y$.
-* Weights for the course grade are fixed in this implementation: $w_1$ for midterm and $w_2$ for final. By default $w_1 = w_2 = 0.5$.
-
-### Weighted course score (HBN)
-
-Define the student (and class) HBN as the weighted sum:
-
-$$
-H = w_1 X + w_2 Y .
-$$
-
-#### Mean of HBN
-
-By linearity of expectation:
-
-$$
-\mu_H = \mathbb{E}[H] = w_1 \mu_X + w_2 \mu_Y.
-$$
-
-#### Variance of HBN — derivation
-
-Start with the variance identity for a sum of two random variables:
-
-$$
-\operatorname{Var}(X+Y) = \operatorname{Var}(X) + \operatorname{Var}(Y) + 2\operatorname{Cov}(X,Y).
-$$
-
-For a weighted sum $H = w_1 X + w_2 Y$, apply the same identity with constants:
-
-$$
-\begin{aligned}
-\operatorname{Var}(H)
-&= \operatorname{Var}(w_1 X + w_2 Y) \\
-&= w_1^2 \operatorname{Var}(X) + w_2^2 \operatorname{Var}(Y) + 2 w_1 w_2 \operatorname{Cov}(X,Y).
-\end{aligned}
-$$
-
-We express covariance using the correlation coefficient $p$:
-
-$$
-\operatorname{Cov}(X,Y) = p\,\sigma_X\,\sigma_Y.
-$$
-
-Substitute into the variance expression to obtain the HBN variance:
-
-$$
-\boxed{\;
-\operatorname{Var}(H) = w_1^2 \sigma_X^2 \;+\; w_2^2 \sigma_Y^2 \;+\; 2 w_1 w_2 p \,\sigma_X \sigma_Y\;
-}
-$$
-
-Finally, the HBN standard deviation is:
-
-$$
-\sigma_H = \sqrt{\operatorname{Var}(H)}.
-$$
+> **Not:** Finansal nedenlerden dolayı özel bir alan adı satın alınmamıştır; uygulama şu anda ücretsiz Cloudflare Workers URL'si altında barındırılmaktadır. Uygun olduğunda özel bir alan adı eklenecektir.
 
 ---
 
-## Features
+## Matematiksel türetme (HBN ortalaması ve varyansı)
 
-* 📐 **Statistical Computation:** Full HBN mean and variance calculation using correlation.
-* 🎓 **Letter Grade Prediction:** T-score system or absolute grading method based on class size.
-* 🖥️ **Interactive UI:** Responsive interface with React + Tailwind CSS.
-* ☁️ **Cloudflare Deployment:** Lightweight static hosting for global access.
-* 🔒 **Faculty Rules:** Configurable minimum final thresholds per department.
+Bu bölüm, uygulamada kullanılan matematiksel formülleri tam olarak belgelemekte ve bunların eşleştirilmiş değişkenler için temel varyans özdeşliklerinden nasıl türetildiklerini göstermektedir.
+
+### Notasyon
+
+- X, vize notu rastgele değişkeni (sınıf dağılımı) olsun.
+
+Ortalama: μ_X, standart sapma: σ_X, varyans: Var(X) = σ_X².
+- Y, final notu rastgele değişkeni (sınıf dağılımı) olsun.
+Ortalama: μ_Y, standart sapma: σ_Y, varyans: Var(Y) = σ_Y².
+- p, X ve Y arasındaki Pearson korelasyon katsayısı olsun: p = corr(X,Y), burada p ∈ [-1,1].
+- Cov(X,Y), X ve Y arasındaki kovaryansı göstersin.
+- Bu uygulamada ders notunun ağırlıkları sabittir: ara sınav için w₁ ve final için w₂. Varsayılan olarak w₁ = w₂ = 0,5'tir.
+
+### Ağırlıklı ders puanı (HBN)
+
+Öğrencinin (ve sınıfın) HBN'sini ağırlıklı toplam olarak tanımlayın:
+
+H = w₁ * X + w₂ * Y
+
+#### HBN'nin ortalaması
+
+Beklentinin doğrusallığına göre:
+
+μ_H = E[H] = w₁ * μ_X + w₂ * μ_Y
+
+#### HBN'nin varyansı — türetme
+
+İki rastgele değişkenin toplamı için varyans özdeşliğiyle başlayın:
+
+Var(X + Y) = Var(X) + Var(Y) + 2 * Cov(X,Y)
+
+H = w₁ * X + w₂ * Y ağırlıklı toplam için:
+
+Var(H) = w₁² * Var(X) + w₂² * Var(Y) + 2 * w₁ * w₂ * Cov(X,Y)
+
+İfade korelasyon katsayısı p kullanılarak kovaryans:
+
+Cov(X,Y) = p * σ_X * σ_Y
+
+Varyans ifadesine yerine koyun:
+
+Var(H) = w₁² * σ_X² + w₂² * σ_Y² + 2 * w₁ * w₂ * p * σ_X * σ_Y
+
+Son olarak, HBN standart sapması:
+
+σ_H = sqrt(Var(H))
 
 ---
 
-## Tech Stack
+## Özellikler
+
+* 📐 **İstatistiksel Hesaplama:** Korelasyon kullanılarak tam HBN ortalaması ve varyans hesaplaması.
+* 🎓 **Harf Notu Tahmini:** Sınıf büyüklüğüne göre T-puan sistemi veya mutlak notlandırma yöntemi.
+* 🖥️ **Etkileşimli Kullanıcı Arayüzü:** React ve Tailwind CSS ile uyumlu arayüz. * ☁️ **Cloudflare Dağıtımı:** Küresel erişim için hafif statik barındırma.
+* 🔒 **Fakülte Kuralları:** Bölüm başına yapılandırılabilir minimum son eşikler.
+
+---
+
+## Teknoloji Yığını
 
 * Next.js (React + TypeScript)
 * Tailwind CSS
-* Cloudflare Workers (static deployment)
-* npm / yarn / pnpm / bun compatible
+* Cloudflare Workers (statik dağıtım)
+* npm / yarn / pnpm / bun uyumlu
 
 ---
 
-## Getting Started
+## Başlarken
 
 ```bash
-git clone https://github.com/your-username/ktu-grade-calculator
+git clone https://github.com/kullanıcı-adınız/ktu-grade-calculator
 cd ktu-grade-calculator
 npm install
 npm run dev
@@ -119,7 +99,7 @@ npm run dev
 
 ---
 
-## Deployment
+## Dağıtım
 
 ```bash
 npm run build && npm run deploy
@@ -127,8 +107,8 @@ npm run build && npm run deploy
 
 ---
 
-## Why this project is CV-worthy
+## Bu proje neden özgeçmişe uygun?
 
-* Demonstrates translating **formal academic rules** into a robust algorithm
-* Shows competency in **statistical reasoning, TypeScript architecture, UI design, and cloud deployment**
-* Clean separation between domain logic (statistics) and presentation (Next.js UI) — production-quality coding practices
+* **Resmi akademik kuralları** sağlam bir algoritmaya dönüştürmeyi gösterir
+* **İstatistiksel akıl yürütme, TypeScript mimarisi, kullanıcı arayüzü tasarımı ve bulut dağıtımında** yetkinlik gösterir
+* Alan mantığı arasında net ayrım (istatistikler) ve sunum (Next.js kullanıcı arayüzü) — üretim kalitesinde kodlama uygulamaları
